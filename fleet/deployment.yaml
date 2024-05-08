@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openwebrx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openwebrx
+  template:
+    metadata:
+      labels:
+        app: openwebrx
+    spec:
+      containers:
+      - name: openwebrx
+        image: bgulla/openwebrx
+        resources:
+          limits:
+            akri.sh/akri-sd-radio: "1"
+        ports:
+        - containerPort: 8073
+        securityContext:
+          privileged: true
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openwebrx-service
+spec:
+  type: NodePort
+  selector:
+    app: openwebrx
+  ports:
+    - port: 8073
+      targetPort: 8073
+      nodePort: 30000
+      protocol: TCP
